@@ -52,12 +52,12 @@ void setup()
 //  OLED.display();
 //  delay(2000);
     OLED.clearDisplay();
-    OLED.display();
     OLED.setFont(&FreeMono9pt7b);
     OLED.setTextSize(1);
     OLED.setTextColor(SH110X_WHITE);
     OLED.setCursor(0,19);
     OLED.println("START!");
+    OLED.display();
 }
 
 // メインループ

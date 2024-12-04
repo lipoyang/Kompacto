@@ -44,6 +44,10 @@ void setup()
     pinMode(LED2, OUTPUT);
     pinMode(LED3, OUTPUT);
 
+    // OLEDとロータリーエンコーダの初期化
+    display.begin();
+    encoder.begin(PIN_D08, PIN_D09, PIN_D10);
+
     // 楽器の初期化
     if (!inst.begin()) {
         Serial.println("ERROR: init error.");
@@ -51,10 +55,6 @@ void setup()
             delay(1000);
         }
     }
-
-    // ロータリーエンコーダとOLEDの初期化
-    encoder.begin(PIN_D08, PIN_D09, PIN_D10);
-    display.begin();
 
     ledOn(LED2);
     Serial.println("start!");
@@ -87,7 +87,7 @@ static void ui_update()
 
     // エンコーダの回転あった？
     int diff = encoder.readDiff();
-    int cnt = 0;
+    static int cnt = 0;
     if(diff != 0){
         cnt = encoder.readCount();
         printf("%d %d\n", diff, cnt);

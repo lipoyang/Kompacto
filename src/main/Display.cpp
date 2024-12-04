@@ -13,6 +13,7 @@ static const int8_t SEND_ID = 100;
 // 初期化する
 void Display::begin()
 {
+    _ready = true;
     int ret = MP.begin(SUBCORE);
     if (ret < 0) {
         ::printf("Display: MP.begin error = %d\n", ret);
