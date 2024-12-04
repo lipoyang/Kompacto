@@ -1,5 +1,7 @@
 #include <SFZSink.h>
 #include "Kompacto.h"
+#include "SwEncoder.h"
+#include "Display.h"
 
 // 鍵盤のキー1～8のピン番号
 static const int PIN_KEYBOARD[] = {
@@ -21,6 +23,15 @@ SFZSink sink("Koto.sfz");
 // 定数とSinkを指定して楽器を生成
 Kompacto inst(PIN_KEYBOARD, FREQ_STRINGS, sink);
 
+// スイッチ付きロータリーエンコーダ
+SwEncoder encoder;
+
+// OLED表示
+Display display;
+
+// UI処理 (仮)
+static void ui_update();
+
 // 初期化
 void setup()
 {
@@ -41,6 +52,10 @@ void setup()
         }
     }
 
+    // ロータリーエンコーダとOLEDの初期化
+    encoder.begin(PIN_D08, PIN_D09, PIN_D10);
+    display.begin();
+
     ledOn(LED2);
     Serial.println("start!");
 }
@@ -48,5 +63,43 @@ void setup()
 // メインループ
 void loop()
 {
+    // 楽器の処理
     inst.update();
+
+    // UIの処理(仮)
+    ui_update();
+}
+
+// UI処理(仮)
+static void ui_update()
+{
+    static int pressCnt = 0;
+    
+    bool redraw = false;
+  
+    // エンコーダのスイッチ押された？
+    encoder.update();
+    if(encoder.wasReleased()){
+        printf("pressed\n");
+        pressCnt++;
+        redraw = true;
+    }
+
+    // エンコーダの回転あった？
+    int diff = encoder.readDiff();
+    int cnt = 0;
+    if(diff != 0){
+        cnt = encoder.readCount();
+        printf("%d %d\n", diff, cnt);
+        redraw = true;
+    }
+    
+    // OLED表示
+    display.update();
+    if(display.isReady() && redraw){
+        display.printf(0, "%d %d", cnt, diff);
+        display.printf(1, "press %d", pressCnt);
+        display.printf(2, "1234567890");
+        display.send(CMD_NORMAL);
+    }
 }
