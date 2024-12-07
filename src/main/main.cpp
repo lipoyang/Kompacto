@@ -63,10 +63,10 @@ void setup()
     Serial.println("START!");
     display.clear();
     display.printf(1, "  START!");
-    display.send(CMD_NORMAL);
+    display.sendCommand(CMD_NORMAL);
     delay(500);
     display.clear();
-    display.send(CMD_NORMAL);
+    display.sendCommand(CMD_NORMAL);
 }
 
 // メインループ
@@ -95,15 +95,16 @@ static void ui_update()
         "F#", "G",  "G#", "A",  "A#", "B"
     };
     static int pressCnt = 0;
-    
-    bool redraw = false;
   
     // エンコーダのスイッチ押された？
     encoder.update();
     if(encoder.wasReleased()){
         printf("pressed\n");
         pressCnt++;
-        redraw = true;
+        display.clear();
+        display.printf(0, "button cnt");
+        display.printf(1, "%d", pressCnt);
+        display.setCommand(CMD_NORMAL);
     }
 
     // エンコーダの回転あった？
@@ -112,16 +113,10 @@ static void ui_update()
     if(diff != 0){
         cnt = encoder.readCount();
         printf("%d %d\n", diff, cnt);
-        redraw = true;
-    }
-
-    // OLED表示
-    display.update();
-    if(display.isReady() && redraw){
-        display.printf(0, "%d %d", cnt, diff);
-        display.printf(1, "press %d", pressCnt);
-        display.printf(2, "1234567890");
-        display.send(CMD_NORMAL);
+        display.clear();
+        display.printf(0, "encoder");
+        display.printf(1, "%d %d", diff, cnt);
+        display.setCommand(CMD_NORMAL);
     }
 
     // ノートオンあった？
@@ -133,7 +128,7 @@ static void ui_update()
             int octave = _note / 12 - 1;
             display.clear();
             display.printf(0, "%s%d", NOTE[note12], octave);
-            display.send(CMD_LARGE);
+            display.setCommand(CMD_LARGE);
         }
     }
     if(_isNoteOn){
@@ -143,10 +138,13 @@ static void ui_update()
             _isNoteOn = false;
             if(display.isReady()){
                 display.clear();
-                display.send(CMD_NORMAL);
+                display.setCommand(CMD_LARGE);
             }
         }
     }
+
+    // OLED表示更新
+    display.update();
 }
 
 // UI処理 (ノートオン時)

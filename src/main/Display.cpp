@@ -14,6 +14,7 @@ static const int8_t SEND_ID = 100;
 void Display::begin()
 {
     _ready = true;
+    _redraw = false;
     int ret = MP.begin(SUBCORE);
     if (ret < 0) {
         ::printf("Display: MP.begin error = %d\n", ret);
@@ -40,6 +41,8 @@ void Display::update()
             ::printf("Display: Error rcvid = %d, rcvdata = %d\n", rcvid, rcvdata);
         }
     }
+
+    if(_ready && _redraw) send();
 }
 
 // レディか？ (描画中でないか？)
@@ -56,14 +59,29 @@ void Display::clear()
     _displayData.data[2][0] = '\0';
 }
 
-// コマンド送信
-void Display::send(int command)
+// コマンド設定
+void Display::setCommand(int command)
 {
     _displayData.command = command;
+    _redraw = true;
+}
 
-    int ret = MP.Send(SEND_ID, &_displayData, SUBCORE);
+// コマンド送信(即時)
+void Display::sendCommand(int command)
+{
+    _displayData.command = command;
+    send();
+}
+
+// コマンド送信 (updateから呼ばれる)
+void Display::send()
+{
+    memcpy(&_sendData, &_displayData, sizeof(DisplayData));
+
+    int ret = MP.Send(SEND_ID, &_sendData, SUBCORE);
     if (ret < 0) {
       ::printf("MP.Send error = %d\n", ret);
     }
     _ready = false;
+    _redraw = false;
 }

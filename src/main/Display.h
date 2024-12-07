@@ -24,8 +24,13 @@ public:
         vsprintf(_displayData.data[row], format, args);
         va_end(args);
     }
-    void send(int command);
+    void setCommand(int command);
+    void sendCommand(int command);
 private:
+    void send();
+    
     DisplayData _displayData;
+    DisplayData _sendData;
     bool _ready;
+    bool _redraw;
 };
