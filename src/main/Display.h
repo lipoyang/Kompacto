@@ -16,6 +16,7 @@ public:
     void begin();
     void update();
     bool isReady();
+    void clear();
     void printf(int row, const char* format, ...)
     {
         va_list args;

@@ -31,6 +31,7 @@ Display display;
 
 // UI処理 (仮)
 static void ui_update();
+static void ui_onNoteOn(int note);
 
 // 初期化
 void setup()
@@ -55,9 +56,17 @@ void setup()
             delay(1000);
         }
     }
+    inst.onNoteOn = ui_onNoteOn;
 
+    // 初期化完了の表示
     ledOn(LED2);
-    Serial.println("start!");
+    Serial.println("START!");
+    display.clear();
+    display.printf(1, "  START!");
+    display.send(CMD_NORMAL);
+    delay(500);
+    display.clear();
+    display.send(CMD_NORMAL);
 }
 
 // メインループ
@@ -70,9 +79,21 @@ void loop()
     ui_update();
 }
 
-// UI処理(仮)
+/**************************************************
+  UI処理(仮)
+ **************************************************/
+static bool _hasNoteOn = false;
+static bool _isNoteOn = false;
+static int _note;
+static uint32_t _t_noteOn;
+
+// UI処理更新(仮)
 static void ui_update()
 {
+    const char NOTE[12][3] = {
+        "C",  "C#", "D",  "D#", "E",  "F", 
+        "F#", "G",  "G#", "A",  "A#", "B"
+    };
     static int pressCnt = 0;
     
     bool redraw = false;
@@ -93,7 +114,7 @@ static void ui_update()
         printf("%d %d\n", diff, cnt);
         redraw = true;
     }
-    
+
     // OLED表示
     display.update();
     if(display.isReady() && redraw){
@@ -102,4 +123,36 @@ static void ui_update()
         display.printf(2, "1234567890");
         display.send(CMD_NORMAL);
     }
+
+    // ノートオンあった？
+    if(_hasNoteOn){
+        _hasNoteOn = false;
+        _isNoteOn = true;
+        if(display.isReady()){
+            int note12 = _note % 12;
+            int octave = _note / 12 - 1;
+            display.clear();
+            display.printf(0, "%s%d", NOTE[note12], octave);
+            display.send(CMD_LARGE);
+        }
+    }
+    if(_isNoteOn){
+        uint32_t now = millis();
+        uint32_t elapsed = now - _t_noteOn;
+        if(elapsed > 1000){
+            _isNoteOn = false;
+            if(display.isReady()){
+                display.clear();
+                display.send(CMD_NORMAL);
+            }
+        }
+    }
+}
+
+// UI処理 (ノートオン時)
+static void ui_onNoteOn(int note)
+{
+    _note = note;
+    _t_noteOn = millis();
+    _hasNoteOn = true;
 }

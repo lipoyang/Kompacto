@@ -10,10 +10,13 @@ public:
     Kompacto(const int* pin_keyboard, const float* f_strings, Filter& filter)
         : VoiceCapture(filter),
           PIN_KEYBOARD(pin_keyboard),
-          FREQ_STRINGS(f_strings)
+          FREQ_STRINGS(f_strings),
+          onNoteOn(nullptr)
         {};
 
     bool begin() override;
+
+    void (*onNoteOn)(int);
 
 protected:
     void onCapture(unsigned int freq_numer, unsigned int freq_denom, unsigned int volume) override;

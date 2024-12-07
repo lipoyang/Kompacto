@@ -82,6 +82,7 @@ void Kompacto::onCapture(unsigned int freq_number, unsigned int freq_denom, unsi
                 }
                 VoiceCapture::sendNoteOn(note, DEFAULT_VELOCITY, DEFAULT_CHANNEL);
                 _last_note = note;
+                if(onNoteOn != nullptr) onNoteOn(note);
                 
                 printf("string %d, note %d, velocity %d \n", pick, note, velocity);
             }

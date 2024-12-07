@@ -56,7 +56,8 @@ void setup()
     OLED.setTextSize(1);
     OLED.setTextColor(SH110X_WHITE);
     OLED.setCursor(0,19);
-    OLED.println("START!");
+    OLED.println("  Taisho");
+    OLED.println(" KOmpacTO");
     OLED.display();
 }
 

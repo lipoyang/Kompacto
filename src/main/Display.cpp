@@ -48,6 +48,14 @@ bool Display::isReady()
     return _ready;
 }
 
+// バッファのクリア
+void Display::clear()
+{
+    _displayData.data[0][0] = '\0';
+    _displayData.data[1][0] = '\0';
+    _displayData.data[2][0] = '\0';
+}
+
 // コマンド送信
 void Display::send(int command)
 {
