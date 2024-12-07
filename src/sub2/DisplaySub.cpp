@@ -17,7 +17,7 @@ struct DisplayData{
     char data[3][11];
 };
 static const int CMD_NORMAL = 0; // 通常表示
-static const int CMD_LARGE  = 0; // デカ文字表示
+static const int CMD_LARGE  = 1; // デカ文字表示
 
 // エラーで停止
 // num : エラーコード
@@ -84,7 +84,7 @@ void loop()
         OLED.println(rcvdata->data[2]);
     }else if(rcvdata->command == CMD_LARGE){
         OLED.setFont(&FreeMono24pt7b);
-        OLED.setCursor(40,8);
+        OLED.setCursor(30,50);
         OLED.println(rcvdata->data[0]);
     }else{
         OLED.setFont(&FreeMono9pt7b);

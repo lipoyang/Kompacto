@@ -125,7 +125,7 @@ static void ui_update()
     }
 
     // ノートオンあった？
-    if(_hasNoteOn){
+    if(_hasNoteOn && (_note > 0)){
         _hasNoteOn = false;
         _isNoteOn = true;
         if(display.isReady()){

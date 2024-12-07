@@ -8,7 +8,7 @@ struct DisplayData{
     char data[3][11];
 };
 static const int CMD_NORMAL = 0; // 通常表示
-static const int CMD_LARGE  = 0; // デカ文字表示
+static const int CMD_LARGE  = 1; // デカ文字表示
 
 // 表示処理クラス (SubCore2に指令を送る)
 class Display{

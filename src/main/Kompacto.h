@@ -9,9 +9,9 @@ class Kompacto : public VoiceCapture
 public:
     Kompacto(const int* pin_keyboard, const float* f_strings, Filter& filter)
         : VoiceCapture(filter),
+          onNoteOn(nullptr),
           PIN_KEYBOARD(pin_keyboard),
-          FREQ_STRINGS(f_strings),
-          onNoteOn(nullptr)
+          FREQ_STRINGS(f_strings)
         {};
 
     bool begin() override;
@@ -28,4 +28,3 @@ private:
     int _detect_cnt;            // 有効な検出の連続カウンタ
     int _last_note;             // 各弦の最後の音符
 };
-
