@@ -272,7 +272,7 @@ bool PcmRenderer::render() {
             states_[i] = kStateDeallocated;
         	clear(i);
         }
-        if (states_[i] == kStateDeallocated && getReadableSize(i) == 0) {
+        if (states_[i] == kStateDeallocated && getReadableSize(i) < frame_size) {
             states_[i] = kStateUnallocated;
         }
     }
