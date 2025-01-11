@@ -16,7 +16,7 @@ public:
 
     bool begin() override;
 
-    void (*onNoteOn)(int);
+    void (*onNoteOn)(int, float);
 
 protected:
     void onCapture(unsigned int freq_numer, unsigned int freq_denom, unsigned int volume) override;

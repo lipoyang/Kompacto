@@ -7,7 +7,7 @@ static const int VOLUME_THRESH = 800;  // 音量閾値
 static const int LENGTH_THRESH = 1;    // 時間閾値
 
 // 撥弦判定の周波数の許容誤差[Hz]
-static const float F_ERR = 50.0F;
+static const float F_ERR = 75.0F;
 
 // 音程のテーブル
 static const int NOTE_TABLE[4][9]={
@@ -82,9 +82,11 @@ void Kompacto::onCapture(unsigned int freq_number, unsigned int freq_denom, unsi
                 }
                 VoiceCapture::sendNoteOn(note, DEFAULT_VELOCITY, DEFAULT_CHANNEL);
                 _last_note = note;
-                if(onNoteOn != nullptr) onNoteOn(note);
+                if(onNoteOn != nullptr) onNoteOn(note, freq);
                 
                 printf("string %d, note %d, velocity %d \n", pick, note, velocity);
+            }else{
+                if(onNoteOn != nullptr) onNoteOn(0, freq);
             }
         }
     }

@@ -35,6 +35,8 @@ void SwEncoder::begin(int pinA, int pinB, int pinSW)
     _sw_prev = false;
     _has_sw = (pinSW > 0) ? true : false;
     _wasReloased = false;
+    _wasLongPushed = false;
+    _wasLongPushed2 = false;
 
     pinMode(pinA,  INPUT_PULLUP);
     pinMode(pinB,  INPUT_PULLUP);
@@ -50,17 +52,36 @@ void SwEncoder::begin(int pinA, int pinB, int pinSW)
         _sw_encoder_index++;
     }
     _initializing = false; // trick
+    _t_last = millis();
 }
 
 void SwEncoder::update()
 {
-    if(_has_sw)
-    {
-        bool sw = (digitalRead(_pinSW) == LOW) ? true : false;
-        if((_sw_prev == true) && (sw == false)){
-            _wasReloased = true;
+    uint32_t now = millis();
+    uint32_t elapsed = _t_last - now;
+    if(elapsed > 100){
+        _t_last = now;
+        if(_has_sw)
+        {
+            bool sw = (digitalRead(_pinSW) == LOW) ? true : false;
+            if((_sw_prev == true) && (sw == false)){
+                if(_wasLongPushed2){
+                    _wasLongPushed2 = false;
+                }else{
+                    _wasReloased = true;
+                }
+            }
+            if((_sw_prev == false) && (sw == true)){
+                _t_pushed = now;
+            }
+            if(sw == true){
+                if((_wasLongPushed2 == false) && (now - _t_pushed > 3000)){
+                    _wasLongPushed = true;
+                    _wasLongPushed2 = true;
+                }
+            }
+            _sw_prev = sw;
         }
-        _sw_prev = sw;
     }
 }
 
@@ -92,6 +113,13 @@ bool SwEncoder::wasReleased()
 {
     bool ret = _wasReloased;
     _wasReloased = false;
+    return ret;
+}
+
+bool SwEncoder::wasLongPushed()
+{
+    bool ret = _wasLongPushed;
+    _wasLongPushed = false;
     return ret;
 }
 

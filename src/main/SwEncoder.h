@@ -12,6 +12,7 @@ public:
     int  readDiff();
     bool isPressed();
     bool wasReleased();
+    bool wasLongPushed();
     static void isr(SwEncoder *encoder);
 private:
     int _pinA;
@@ -23,4 +24,8 @@ private:
     bool _sw_prev;
     bool _wasReloased;
     bool _initializing;
+    bool _wasLongPushed;
+    bool _wasLongPushed2;
+    uint32_t _t_pushed;
+    uint32_t _t_last;
 };
