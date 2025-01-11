@@ -94,6 +94,24 @@ static float _tuning_buff[4];
 static int   _tuning_cnt = -1;
 static int   _tuning_str = 0;
 
+// チューニング表示
+static void ui_display_tuning(float freq = 0)
+{
+    const char STRING[4] = {'G', 'D', 'A', 'E'};
+
+    display.clear();
+    display.printf(0, "Tuning");
+    if(_tuning_cnt < 0){
+        display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
+    }else{
+        display.printf(1, "%c : %d", STRING[_tuning_str], _tuning_cnt);
+    } 
+    if(freq > 0){
+        display.printf(2, "%.0f", _freq);
+    }
+    display.setCommand(CMD_NORMAL);
+}
+
 // UI処理初期化
 static void ui_init()
 {
@@ -137,7 +155,6 @@ static void ui_update()
         "C",  "C#", "D",  "D#", "E",  "F", 
         "F#", "G",  "G#", "A",  "A#", "B"
     };
-    const char STRING[4] = {'G', 'D', 'A', 'E'};
   
     // エンコーダのスイッチ押された？
     encoder.update();
@@ -165,10 +182,7 @@ static void ui_update()
             _tuning_mode = true;
             _tuning_str = 0;
             _tuning_cnt = -1;
-            display.clear();
-            display.printf(0, "Tuning");
-            display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
-            display.setCommand(CMD_NORMAL);
+            ui_display_tuning();
         }
     }
     // 短押し
@@ -176,15 +190,10 @@ static void ui_update()
         if(_tuning_mode){
             if(_tuning_cnt < 0){
                 _tuning_cnt = 0;
-                display.clear();
-                display.printf(0, "Tuning");
-                display.printf(1, "%c : %d", STRING[_tuning_str], _tuning_cnt);
-                display.setCommand(CMD_NORMAL);
+                ui_display_tuning();
             }else{
-                display.clear();
-                display.printf(0, "Tuning");
-                display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
-                display.setCommand(CMD_NORMAL);
+                _tuning_cnt = -1;
+                ui_display_tuning();
             }
         }
     }
@@ -195,10 +204,7 @@ static void ui_update()
         if(_tuning_mode){
             _tuning_str = (int)((unsigned int)(_tuning_str - diff) % 4);
             _tuning_cnt = -1;
-            display.clear();
-            display.printf(0, "Tuning");
-            display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
-            display.setCommand(CMD_NORMAL);
+            ui_display_tuning();
         }
     }
 
@@ -208,7 +214,7 @@ static void ui_update()
         if(_tuning_mode == false) _isNoteOn = true;
         if(display.isReady()){
             if(_tuning_mode == false){
-                // 通常モードの表示
+                // 通常モード
                 if(_note > 0){
                     int note12 = _note % 12;
                     int octave = _note / 12 - 1;
@@ -217,29 +223,21 @@ static void ui_update()
                     display.setCommand(CMD_LARGE);
                 }
             }else{
-                // チューニングモードの表示
-                display.clear();
-                display.printf(0, "Tuning");
-                if(_tuning_cnt < 0){
-                    display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
-                }else{
+                // チューニングモード
+                if(_tuning_cnt >= 0){
                     _tuning_buff[_tuning_cnt] = _freq;
                     _tuning_cnt++;
-                    if(_tuning_cnt < 4){
-                        display.printf(1, "%c : %d", STRING[_tuning_str], _tuning_cnt);
-                    }else{
+                    if(_tuning_cnt >= 4){
                         float ave = 0;
                         for(int i = 0; i < 4; i++){
                             ave += _tuning_buff[i];
                         }
                         ave /= 4.0;
                         FREQ_STRINGS[_tuning_str] = ave;
-                        _tuning_cnt = 0;
-                        display.printf(1, "%c = %.0f", STRING[_tuning_str], FREQ_STRINGS[_tuning_str]);
+                        _tuning_cnt = -1;
                     }
                 }
-                display.printf(2, "%.0f", _freq);
-                display.setCommand(CMD_NORMAL);
+                ui_display_tuning(_freq);
             }
         }
     }
