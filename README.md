@@ -29,7 +29,10 @@
 - マイクロSDカード
 - DC/DCコンバータ イーター電機工業 AS6R0-0505 
 
-<!--
+## 筐体設計
+- Autodesk Fusion で設計
+- MDF (4mm厚) をレーザー加工 
+- [データはこちら](mech/)
+
 ## 詳しい解説
-[大正こンパクと (コンパクトな新しい電子大正琴) by lipoyang | elchika]()
--->
+[大正こンパクと (コンパクトな新しい電子大正琴) by lipoyang | elchika](https://elchika.com/article/6b575aa8-6e87-465e-a23a-7378933b20f7/)
